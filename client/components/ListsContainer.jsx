@@ -11,10 +11,13 @@ class ListsContainer extends React.Component {
       images: false,
       list: [],
       optionA: true,
+      overscanRows: 10,
+      threshold: 100,
     };
     this.addImages = this.addImages.bind(this);
     this.changeDisplayedList = this.changeDisplayedList.bind(this);
     this.changeListLength = this.changeListLength.bind(this);
+    this.changeListThreshold = this.changeListThreshold.bind(this);
   }
 
   addImages() {
@@ -31,8 +34,21 @@ class ListsContainer extends React.Component {
     this.setState({ list });
   }
 
+  changeListThreshold(value) {
+    const numberValue = Number(value);
+    let overscanRows;
+
+    if (this.state.images) {
+      overscanRows = Math.ceil(numberValue / 240);
+    } else {
+      overscanRows = Math.ceil(numberValue / 18);
+    }
+
+    this.setState({ threshold: numberValue, overscanRows });
+  }
+
   determineListComponent() {
-    const { list, images } = this.state;
+    const { list, images, overscanRows, threshold } = this.state;
 
     if (this.state.optionA) {
       return (
@@ -53,13 +69,14 @@ class ListsContainer extends React.Component {
                 </div>
               )
             }
+            overscanRows={overscanRows}
           />
         </div>
       );
     }
 
     return (
-      <div style={{ overflow: 'auto', WebkitOverflowScroll: 'touch', height: 500, width: 320 }}>
+      <div style={{ overflow: 'auto', WebkitOverflowScrolling: 'touch', height: 500, width: 320 }}>
         <ReactList
           itemRenderer={
             index => (
@@ -74,6 +91,7 @@ class ListsContainer extends React.Component {
           }
           length={list.length}
           type="uniform"
+          threshold={threshold}
         />
       </div>
     );
@@ -88,6 +106,7 @@ class ListsContainer extends React.Component {
           addImages={this.addImages}
           changeDisplayedList={this.changeDisplayedList}
           changeListLength={this.changeListLength}
+          changeListThreshold={this.changeListThreshold}
         />
         { listComponent }
       </div>
